@@ -1,4 +1,4 @@
-# NTIRE26_Saliency_Prediction
+# CVPR-NTIRE26 SaliencyPrediction
 CVPR-NTIRE 2026 Challenge on Video Saliency Prediction
 
 [![Page](https://img.shields.io/badge/Challenge-Page-blue)](https://www.codabench.org/competitions/12842/)
