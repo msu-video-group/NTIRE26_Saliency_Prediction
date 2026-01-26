@@ -1,4 +1,4 @@
-# CVPR-NTIRE26 Video Saliency Prediction Challenge 2026
+# CVPR-NTIRE Video Saliency Prediction Challenge 2026
 
 [![Page](https://img.shields.io/badge/Challenge-Page-blue)](https://www.codabench.org/competitions/12842/)
 [![Challenges](https://img.shields.io/badge/Challenges-NTIRE%202026-orange)](https://cvlai.net/ntire/2026/)
