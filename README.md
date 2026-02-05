@@ -5,6 +5,35 @@
 
 <img width="2637" height="1358" alt="NTIRE_LOGO_WIDE" src="https://github.com/user-attachments/assets/3be490bb-79fb-4a7a-b904-cda78a8de8fb" />
 
+
+## Dataset
+[![Dataset](https://img.shields.io/badge/Dataset-Google%20Drive-brightgreen)](https://drive.google.com/drive/folders/1zpNtlrWKowW5m0SOUymjZDPXUMmbn9jy?usp=sharing)
+[![Dataset HuggingFace](https://img.shields.io/badge/Dataset-HuggingFace-yellow)](https://huggingface.co/datasets/ANDRYHA/VideoSaliencyChallenge)
+
+We provide a novel audio-visual mouse saliency dataset with the following key-features:
+* Diverse content: movie, sports, live, vertical videos, etc.;
+* Large scale: **2000** videos with mean **18s** duration;
+* High resolution: all streams are **FullHD**;
+* **Audio** track saved and played to observers;
+* Mouse fixations from **>5000** observers (**>70** per video);
+* License: **CC-BY**;
+
+File structure:
+1) `Videos.zip` — 2000 (1200 Train + 800 Test) .mp4 video (kindly reminder: many videos contain an audio stream and users watched the video with the sound turned ON!) 
+
+2) `TrainTestSplit.json` — in this JSON we provide Train/Public Test/Private Test split of all videos 
+
+3) `SaliencyTrain.zip/SaliencyTest.zip` — almost losslessly (crf 0, 10bit, min-max normalized) compressed continuous saliency maps videos for Train/Test subset 
+
+4) `FixationsTrain.zip/FixationsTest.zip` — contains the following files for Train/Test subset: 
+
+* `.../video_name/fixations.json` — per-frame fixations coordinates, from which saliency maps were obtained, this JSON will be used for metrics calculation
+
+* `.../video_name/fixations_maps/` — binary fixation maps in '.png' format (since some fixations could share the same pixel, this is a lossy representation and is NOT used either in calculating metrics or generating Gaussians, however, we provide them for visualization and frames count checks)
+
+5) `VideoInfo.json` — meta information about each video (e.g. license)
+
+
 ## Evaluation
 
 ### Environment setup
