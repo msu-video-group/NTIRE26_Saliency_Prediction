@@ -135,8 +135,8 @@ def calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frame
         if len([x for x in detail_result if x['video_name'] == video_name]) > 0:
             continue
         short_video_name = Path(video_name).name
-        model_output = str(Path(model_extracted_frames) / f'{short_video_name}*')
-        gt_gaussians = str(Path(gt_extracted_frames) / f'{short_video_name}*')
+        model_output = str(Path(model_extracted_frames) / f'{short_video_name}')
+        gt_gaussians = str(Path(gt_extracted_frames) / f'{short_video_name}')
         gt_fixations = Path(gt_fixations_path) / short_video_name / 'fixations.json'
         cur_result = calculate_metrics(video_name, model_output, gt_gaussians, gt_fixations, num_workers)
         detail_result += [cur_result]
