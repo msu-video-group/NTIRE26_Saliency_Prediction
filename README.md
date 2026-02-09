@@ -33,6 +33,7 @@ File structure:
 
 5) `VideoInfo.json` — meta information about each video (e.g. license)
 
+6) `SampleSubmission.zip` — example submission for the challenge, obtained from fitted Center Prior Gaussian over mean training saliency maps.
 
 ## Evaluation
 
@@ -49,7 +50,7 @@ Archives with videos were accepted from challenge participants as submissions an
 
 Usage example:
 
-1) Check that your predictions match the structure and names of the [baseline CenterPrior submission](https://drive.google.com/file/d/1rPgMdb4L79OD2vvpDQyqWZIDox78rmxG/view)
+1) Check that your predictions match the structure and names of the [baseline SampleSubmission](https://drive.google.com/file/d/1-luBWGvicN1JHZjq0h0imUVvBh5q1-4y/view?usp=sharing)
 2) Install `pip install -r requirments.txt`, `conda install ffmpeg`
 3) Download and extract `SaliencyTest.zip`,  `FixationsTest.zip`, and `TrainTestSplit.json` files from the dataset page
 4) Run `python bench.py` with flags:
