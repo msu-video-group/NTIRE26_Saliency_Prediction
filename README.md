@@ -40,9 +40,9 @@ File structure:
 ### Environment setup
 
 ```
-conda create -n saliency python=3.8.16
+conda create -n saliency python=3.10.19
 conda activate saliency
-pip install numpy==1.24.2 opencv-python==4.7.0.72 tqdm==4.65.0
+pip install numpy==2.2.6 opencv-python-headless==4.12.0.88 tqdm==4.67.1
 conda install ffmpeg=4.4.2 -c conda-forge
 ```
 ### Run evaluation

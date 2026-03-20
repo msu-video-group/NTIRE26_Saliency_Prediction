@@ -56,7 +56,7 @@ def auc_judd(S, F):
     tp[1:-1] = arange / Nfixations
 
     # Trapezoidal integration to compute AUC-Judd
-    return np.trapz(tp, fp)
+    return np.trapezoid(tp, fp)
 
 
 
@@ -87,10 +87,10 @@ def calculate_frame_metrics(frame):
     pred_sm = cv2.resize(read_sm(frame['predictions_path']), (gt_120_sm.shape[1], gt_120_sm.shape[0]))
 
     return {
-        'sim_score': similarity(pred_sm, gt_120_sm),
-        'nss_score': nss(pred_sm, gt_fix),
-        'cc_score': cc(pred_sm, gt_120_sm),
-        'auc_judd_score': auc_judd(pred_sm, gt_fix),
+        'sim_score': float(similarity(pred_sm, gt_120_sm)),
+        'nss_score': float(nss(pred_sm, gt_fix)),
+        'cc_score': float(cc(pred_sm, gt_120_sm)),
+        'auc_judd_score': float(auc_judd(pred_sm, gt_fix)),
     }
 
 
@@ -102,7 +102,9 @@ def calculate_metrics(video_name, temp_predictions_path, temp_gt_saliency_path, 
 
     scores = []
     assert_func = lambda path: set([int(x.split('.')[0]) for x in listdir(path)])
-    assert assert_func(gt_saliency_path) == assert_func(predictions_path)
+    gt_set = assert_func(gt_saliency_path)
+    pred_set = assert_func(predictions_path)
+    assert gt_set == pred_set, f'{video_name}: {len(gt_set)}, {len(pred_set)}'
 
     frames = [
         {
@@ -121,17 +123,23 @@ def calculate_metrics(video_name, temp_predictions_path, temp_gt_saliency_path, 
 
     return {
         'video_name' : video_name,
-        'cc' : np.mean(conv_scores['cc_score']),
-        'sim' : np.mean(conv_scores['sim_score']),
-        'nss' : np.mean(conv_scores['nss_score']),
-        'auc_judd' : np.mean(conv_scores['auc_judd_score']),
+        'cc' : conv_scores['cc_score'],
+        'sim' : conv_scores['sim_score'],
+        'nss' : conv_scores['nss_score'],
+        'auc_judd' : conv_scores['auc_judd_score'],
     }
 
 
-def calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frames, gt_fixations_path, num_workers=4):
+def calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frames, gt_fixations_path, results_path, num_workers=4):
     
+    results_path = Path(results_path)
+    results_path.mkdir(exist_ok=True)
     detail_result = []
     for video_name in tqdm(video_names):
+        video_res_path = results_path /  f'{video_name}.json'
+        if video_res_path.exists():
+            continue
+
         if len([x for x in detail_result if x['video_name'] == video_name]) > 0:
             continue
         short_video_name = Path(video_name).name
@@ -139,13 +147,17 @@ def calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frame
         gt_gaussians = str(Path(gt_extracted_frames) / f'{short_video_name}')
         gt_fixations = Path(gt_fixations_path) / short_video_name / 'fixations.json'
         cur_result = calculate_metrics(video_name, model_output, gt_gaussians, gt_fixations, num_workers)
-        detail_result += [cur_result]
-        np.save("tmp2.npy", detail_result)
+
+        with open(video_res_path, 'w') as f:
+            json.dump(cur_result, f)
+
+        # detail_result += [cur_result]
+        # np.save("tmp2.npy", detail_result)
 
     return detail_result
 
 
-def make_bench(model_extracted_frames, gt_extracted_frames, gt_fixations_path, split_json='TrainTestSplit.json', results_json='results.json', mode='public_test', num_workers=4):
+def make_bench(model_extracted_frames, gt_extracted_frames, gt_fixations_path, split_json='TrainTestSplit.json', results_path='results', mode='public_test', num_workers=4):
 
     print(num_workers, 'worker(s)')
     print(f'Testing {model_extracted_frames}')
@@ -162,28 +174,30 @@ def make_bench(model_extracted_frames, gt_extracted_frames, gt_fixations_path, s
         splits = set(json.load(f)[mode])
 
     video_names = [name for name in video_names if name in splits]
+    # print(video_names[28])
 
-    detail_result = calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frames, gt_fixations_path, num_workers)
-    detail_result = sorted(detail_result, key=lambda res: res['video_name'])
+    detail_result = calculate_all_videos(video_names, model_extracted_frames, gt_extracted_frames, gt_fixations_path, results_path, num_workers)
+    # detail_result = sorted(detail_result, key=lambda res: res['video_name'])
 
-    result = {'cc' : [], 'sim' : [], 'nss' : [], 'auc_judd' : []}
-    for i in result:
-        for j in detail_result:
-            result[i].append(j[i])
+    # result = {'cc' : [], 'sim' : [], 'nss' : [], 'auc_judd' : []}
+    # for i in result:
+    #     for j in detail_result:
+    #         result[i].append(j[i])
 
-    with open(results_json, 'w') as f:
-        json.dump(result, f)
+    # with open(results_json, 'w') as f:
+    #     json.dump(result, f)
 
-    model_res = {'Model': [model_extracted_frames], 'Mode': [mode]}
-    [model_res.update({key: [np.mean(result[key])]}) for key in result.keys()]
+    # model_res = {'Model': [model_extracted_frames], 'Mode': [mode]}
+    # [model_res.update({key: [np.mean(result[key])]}) for key in result.keys()]
     
-    print(model_res)
+    # print(model_res)
 
 
 
 def extract_frames(input_dir, output_dir, split_json='TrainTestSplit.json', mode='public_test', num_workers=4):
 
     def poolfunc(x):
+        # print(x.stem)
         if x.stem not in splits[mode]:
             return
         dst_vid = dst / x.stem
@@ -201,6 +215,7 @@ def extract_frames(input_dir, output_dir, split_json='TrainTestSplit.json', mode
     dst = Path(output_dir)
     dst.mkdir(exist_ok=True)
     videos = list(root.iterdir())
+    # print(videos)
     pbar = tqdm(total=len(splits[mode]))
     with ThreadPool(num_workers) as p:
         p.map(poolfunc, videos)
@@ -224,7 +239,7 @@ if __name__ == '__main__':
     parser.add_argument('--split_json', default='./TrainTestSplit.json',
                                 help='Json from dataset page with names splitting')
 
-    parser.add_argument('--results_json', default='./results.json')
+    parser.add_argument('--results_path', default='./results.json')
     parser.add_argument('--mode', default='public_test', help='public_test/private_test')
     parser.add_argument('--num_workers', type=int, default=4)
 
@@ -237,4 +252,4 @@ if __name__ == '__main__':
         print("Extracting", args.gt_video_predictions, 'to', args.gt_extracted_frames)
         extract_frames(args.gt_video_predictions, args.gt_extracted_frames, args.split_json, args.mode, args.num_workers)
 
-    make_bench(args.model_extracted_frames, args.gt_extracted_frames, args.gt_fixations_path, args.split_json, args.results_json, args.mode, args.num_workers)
+    make_bench(args.model_extracted_frames, args.gt_extracted_frames, args.gt_fixations_path, args.split_json, args.results_path, args.mode, args.num_workers)
