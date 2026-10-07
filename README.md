@@ -63,3 +63,17 @@ Usage example:
 * `--results_json ./results.json` — path to the output results json
 * `--mode public_test` — public_test/private_test subsets
 5) The result you get will be available following `results.json` path
+
+## Citation
+Please cite the paper if you find challenge materials useful for your research:
+```
+@InProceedings{Moskalenko_2026_CVPR,
+    author    = {Moskalenko, Andrey and Bryncev, Alexey and Kosmynin, Ivan and Shilovskaya, Kira and Erofeev, Mikhail and Vatolin, Dmitry and Timofte, Radu and Wang, Kun and Hu, Yupeng and Li, Zhiran and Liu, Hao and Xiang, Qianlong and Nie, Liqiang and Chaldaiopoulos, Konstantinos and Efthymiou, Niki and Zlatintsi, Athanasia and Filntisis, Panagiotis and Pastra, Katerina and Maragos, Petros and Yang, Li and Zhan, Gen and Liao, Yiting and Zhang, Yabin and Liu, Yuxin and Wu, Xu and Zheng, Yunheng and Li, Linze and He, Kun and Wu, Cong and Zhu, Xuefeng and Xu, Tianyang and Wu, Xiaojun and Zhao, Wenzhuo and Fu, Keren and Li, Gongyang and Shi, Shixiang and Chen, Jianlin and Ling, Haibin and Jiang, Yaoxin and Xu, Guoyi and Liu, Jiajia and Shi, Yaokun and Tu, Jiachen},
+    title     = {NTIRE 2026 Challenge on Video Saliency Prediction: Methods and Results},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2026},
+    pages     = {2193-2206}
+}
+```
+
